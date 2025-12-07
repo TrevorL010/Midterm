@@ -17,22 +17,27 @@ def scan_ports(target_host, start_port, end_port):
 
     try:
         for port in range(start_port, end_port + 1):
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(1)  # Set timeout to 1 second
-            result = sock.connect_ex((target_host, port))
-            if result == 0:
-                print(f"Port {port}: Open")
-                open_port_count += 1
-            sock.close()
+            
+            try:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(1)  # Set timeout to 1 second
+                result = sock.connect_ex((target_host, port))
+                if result == 0:
+                    print(f"Port {port}: Open")
+                    open_port_count += 1
+                sock.close()
+
+            except socket.error:
+                print(f"\nCould not check {port}, skipping...")
+                continue
+
     except KeyboardInterrupt:
         print("\nExiting Program !!!!")
         sys.exit()
     except socket.gaierror:
         print("\nHostname could not be resolved. Exiting")
         sys.exit()
-    except socket.error:
-        print("\nCouldn't connect to server")
-        sys.exit()
+
     if open_port_count == 0:
         print("No open ports found in the specified range.")
 
